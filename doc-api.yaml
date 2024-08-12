@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: PetsClinic 🐶🐱
+  description: API para gerenciar tutores e seus pets
+  contact:
+    name: Eduardo Ferreira de Brito Matos
+    email: eduardoferreirabmatos@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Servidor local
+tags:
+  - name: pet
+    description: Todas endpoints relacionadas a Pets
+  - name: tutor
+    description: Todas endpoints relacionadas a Tutores
+
+paths:
+  /tutor:
+    get:
+      tags:
+        - tutor
+      summary: Retorna uma lista de todos os tutores
+      responses:
+        '200':
+          description: Lista de tutores retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tutor'
+
+    post:
+      tags:
+        - tutor
+      summary: Cria um novo tutor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorInput'
+      responses:
+        '201':
+          description: Tutor criado com sucesso
+        '400':
+          description: Dados inválidos fornecidos
+
+  /tutor/{id}:
+    put:
+      tags:
+        - tutor
+      summary: Atualiza um tutor existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do tutor
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TutorInput'
+      responses:
+        '200':
+          description: Tutor atualizado com sucesso
+        '404':
+          description: Tutor não encontrado
+
+    delete:
+      tags:
+        - tutor
+      summary: Deleta um tutor existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do tutor
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tutor deletado com sucesso
+        '404':
+          description: Tutor não encontrado
+  
+  /pet/{tutorId}:
+    post:
+      tags:
+        - pet
+      summary: Cria um novo pet vinculado a um tutor
+      parameters:
+        - name: tutorId
+          in: path
+          required: true
+          description: ID do tutor
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetInput'
+      responses:
+        '201':
+          description: Pet criado com sucesso
+        '400':
+          description: Dados inválidos fornecidos
+          
+  /pet/{petId}/tutor/{tutorId}:
+    put:
+      tags:
+        - pet
+      summary: Atualiza um pet existente
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: ID do pet
+          schema:
+            type: integer
+        - name: tutorId
+          in: path
+          required: true
+          description: ID do tutor
+          schema: 
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetInput'
+      responses:
+        '200':
+          description: Pet atualizado com sucesso
+        '404':
+          description: Pet não encontrado
+
+    delete:
+      tags:
+        - pet
+      summary: Deleta um pet existente
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: ID do pet
+          schema:
+            type: integer
+        - name: tutorId
+          in: path
+          required: true
+          description: ID do tutor
+          schema: 
+            type: integer
+      responses:
+        '204':
+          description: Pet deletado com sucesso
+
+components:
+  schemas:
+    Tutor:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        zip_code:
+          type: string
+        pets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pet'
+
+    TutorInput:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        date_of_birth:
+          type: string
+          format: date-time
+        zip_code:
+          type: string
+
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        species:
+          type: string
+        carry:
+          type: string
+        weight:
+          type: integer
+        date_of_birth:
+          type: string
+          format: date-time
+        tutorId:
+          type: integer
+
+    PetInput:
+      type: object
+      properties:
+        name:
+          type: string
+        species:
+          type: string
+        carry:
+          type: string
+        weight:
+          type: integer
+        date_of_birth:
+          type: string
+          format: date-time
+        tutorId:
+          type: integer
